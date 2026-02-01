@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#60A5FA"/>
+      <stop offset="50%" stop-color="#3B82F6"/>
+      <stop offset="100%" stop-color="#1D4ED8"/>
+    </linearGradient>
+    <linearGradient id="innerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#BFDBFE"/>
+      <stop offset="100%" stop-color="#93C5FD"/>
+    </linearGradient>
+  </defs>
+  <!-- Outer circle - represents the fund pool -->
+  <circle cx="32" cy="32" r="30" fill="url(#bgGradient)" stroke="#1E40AF" stroke-width="2"/>
+  <!-- Inner decorative ring -->
+  <circle cx="32" cy="32" r="24" fill="none" stroke="#FFFFFF" stroke-width="1" opacity="0.3"/>
+  <!-- Rupee Symbol ₹ - clean and bold -->
+  <g fill="#FFFFFF">
+    <!-- Top horizontal line -->
+    <rect x="17" y="16" width="30" height="5" rx="2"/>
+    <!-- Second horizontal line -->
+    <rect x="17" y="25" width="30" height="5" rx="2"/>
+    <!-- Diagonal stroke of rupee -->
+    <path d="M22 25 L22 32 L38 52 L46 52 L30 32 L30 25 Z"/>
+  </g>
+  <!-- Small dots representing members/community -->
+  <circle cx="10" cy="32" r="3" fill="#BFDBFE" opacity="0.8"/>
+  <circle cx="54" cy="32" r="3" fill="#BFDBFE" opacity="0.8"/>
+  <circle cx="32" cy="10" r="3" fill="#BFDBFE" opacity="0.8"/>
+</svg>

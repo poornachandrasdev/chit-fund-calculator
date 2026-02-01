@@ -1,0 +1,5 @@
+@import "tailwindcss";
+
+body {
+  font-family: 'Inter', 'Noto Sans Kannada', system-ui, sans-serif;
+}
