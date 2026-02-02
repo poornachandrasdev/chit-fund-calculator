@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Calculator, TrendingUp, DollarSign, Users, Globe } from 'lucide-react';
 import logo from './assets/logo.svg';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, AreaChart, Area } from 'recharts';
 
 // Format number in Indian numbering system (lakhs, thousands)
 const formatIndianCurrency = (num: number): string => {
@@ -13,6 +12,76 @@ const formatIndianCurrency = (num: number): string => {
     return `${(num / 1000).toFixed(2)} K`;
   }
   return num.toFixed(0);
+};
+
+// Calculate IRR (Internal Rate of Return) using Newton-Raphson method
+// cashFlows: array of cash flows where negative = outflow (payment), positive = inflow (receipt)
+// Returns monthly IRR as a decimal (multiply by 100 for percentage, by 12 for annual)
+const calculateIRR = (cashFlows: number[], maxIterations: number = 100, tolerance: number = 1e-7): number | null => {
+  // Initial guess for monthly rate
+  let rate = 0.01;
+
+  for (let i = 0; i < maxIterations; i++) {
+    let npv = 0;
+    let dnpv = 0; // derivative of NPV
+
+    for (let t = 0; t < cashFlows.length; t++) {
+      const discountFactor = Math.pow(1 + rate, t);
+      npv += cashFlows[t] / discountFactor;
+      dnpv -= t * cashFlows[t] / Math.pow(1 + rate, t + 1);
+    }
+
+    if (Math.abs(npv) < tolerance) {
+      return rate;
+    }
+
+    if (Math.abs(dnpv) < tolerance) {
+      // Derivative too small, try different approach
+      break;
+    }
+
+    const newRate = rate - npv / dnpv;
+
+    // Bounds check to prevent divergence
+    if (newRate < -0.99) {
+      rate = -0.5;
+    } else if (newRate > 10) {
+      rate = 1;
+    } else {
+      rate = newRate;
+    }
+  }
+
+  // If Newton-Raphson didn't converge, try bisection method
+  let low = -0.99;
+  let high = 10;
+
+  for (let i = 0; i < maxIterations; i++) {
+    const mid = (low + high) / 2;
+    let npv = 0;
+
+    for (let t = 0; t < cashFlows.length; t++) {
+      npv += cashFlows[t] / Math.pow(1 + mid, t);
+    }
+
+    if (Math.abs(npv) < tolerance) {
+      return mid;
+    }
+
+    // Calculate NPV at low to determine which half to use
+    let npvLow = 0;
+    for (let t = 0; t < cashFlows.length; t++) {
+      npvLow += cashFlows[t] / Math.pow(1 + low, t);
+    }
+
+    if (npvLow * npv > 0) {
+      low = mid;
+    } else {
+      high = mid;
+    }
+  }
+
+  return null; // Could not converge
 };
 
 const ChitFundApp = () => {
@@ -74,7 +143,28 @@ const ChitFundApp = () => {
       loanAmount: 'Loan Amount',
       interest: 'Interest',
       withdrawal: 'Withdrawal',
-      pool: 'Pool'
+      pool: 'Pool',
+      memberReturns: 'Member Returns Overview',
+      memberReturnDetails: 'Member Return Details',
+      member: 'Member',
+      withdrawalMonth: 'Withdrawal Month',
+      totalContribution: 'Total Contribution',
+      netReturn: 'Net Return',
+      returnPercent: 'Return %',
+      splitContribution: 'Split Contribution Analysis',
+      paidBefore: 'Paid Before',
+      paidAfter: 'Paid After',
+      effectiveLoan: 'Effective Loan',
+      effectiveInterest: 'Member Returns (IRR)',
+      effectiveInterestRate: 'Annualized IRR',
+      monthlyIRR: 'Monthly IRR',
+      cashFlowTimeline: 'Cash Flow Timeline',
+      cumulativePosition: 'Cumulative Position',
+      simpleSummary: 'Simple Summary',
+      youPay: 'You Pay',
+      youGet: 'You Get',
+      netPosition: 'Net Position',
+      monthsToRepay: 'Months to Repay'
     },
     kn: {
       title: 'ಚೀಟಿ ಲೆಕ್ಕಾಚಾರ',
@@ -82,10 +172,10 @@ const ChitFundApp = () => {
       inputParams: 'ಕೆಳಗಿನ ವಿವರಗಳನ್ನು ತುಂಬಿಸಿ',
       totalMembers: 'ಒಟ್ಟು ಸದಸ್ಯರು',
       monthlyContribution: 'ತಿಂಗಳ ಕಂತು ',
-      firstWithdrawal: 'ಮೊದಲ ಚೀಟಿ (ತಿಂಗಳು 1)',
+      firstWithdrawal: 'ಮೊದಲನೇ ಚೀಟಿ',
       finalWithdrawal: 'ಕೊನೆಯ ಚೀಟಿ (ಕೊನೆಯ ತಿಂಗಳು)',
-      monthlyIncrement: 'ಪ್ರತಿ ತಿಂಗಳ ಏರಿಕೆ ಹಣ',
-      loanInterestRate: 'ಚೀಟಿ ಉಳಿಕೆ ಮೊತ್ತದ - ಬಡ್ಡಿ ದರ (% ಪ್ರತಿ ತಿಂಗಳು)',
+      monthlyIncrement: 'ತಿಂಗಳ ಏರಿಕೆ ಹಣ',
+      loanInterestRate: 'ಬಡ್ಡಿ ದರ',
       commissionType: 'ಕಮಿಷನ್ ರೀತಿ',
       monthlyRate: 'ತಿಂಗಳ ಕಮಿಷನ್  (%)',
       oneTimeAmount: 'ಒಟ್ಟು ಕಮಿಷನ್ ಮೊತ್ತ (₹)',
@@ -100,7 +190,7 @@ const ChitFundApp = () => {
       totalLoans: 'ಬಡ್ಡಿಗೆ ನೀಡಿದ ಒಟ್ಟು ಹಣ',
       totalInterest: 'ಗಳಿಸಿದ ಒಟ್ಟು ಬಡ್ಡಿ',
       loanUtilization: 'ಪ್ರತಿ ತಿಂಗಳು ಬಡ್ಡಿಗೆ ಹೋಗುವ ಶೇಕಡಾವಾರು ಹಣ',
-      adjustUtilization: 'ಅಂದಾಜು ಮಾಡಲು ಸರಿಹೊಂದಿಸಿ',
+      adjustUtilization: '% ಸರಿಹೊಂದಿಸಿ ಬಡ್ಡಿ ಹಣ ಅಂದಾಜುಮಾಡಿ',
       withdrawalTrends: 'ಹಿಂಪಡೆಯುವಿಕೆ ಮತ್ತು ತಿಂಗಳಿನ ಚೀಟಿ ಹಣದ ಗ್ರಾಫ್',
       loanDistribution: 'ಸಾಲ ವಿತರಣೆ ಮತ್ತು ಬಡ್ಡಿ ಗಳಿಕೆ',
       contributionVsWithdrawal: 'ಪ್ರತಿ ಸದಸ್ಯರ ಕಟ್ಟುವಿಕೆ ಹಾಗೂ ಹಿಂಪಡೆಯುವಿಕೆ',
@@ -131,7 +221,28 @@ const ChitFundApp = () => {
       loanAmount: 'ಸಾಲದ ಮೊತ್ತ',
       interest: 'ಬಡ್ಡಿ',
       withdrawal: 'ಹಿಂಪಡೆಯುವಿಕೆ',
-      pool: 'ಪೂಲ್'
+      pool: 'ಪೂಲ್',
+      memberReturns: 'ಸದಸ್ಯರ ಲಾಭ ನಷ್ಟ',
+      memberReturnDetails: 'ಸದಸ್ಯರ ಲಾಭ ನಷ್ಟ ವಿವರ',
+      member: 'ಸದಸ್ಯ',
+      withdrawalMonth: 'ಹಿಂಪಡೆಯುವ ತಿಂಗಳು',
+      totalContribution: 'ಒಟ್ಟು ಕಟ್ಟಿದ ಹಣ',
+      netReturn: 'ಗಳಿಕೆ/ನಷ್ಟ',
+      returnPercent: 'ಲಾಭ %',
+      splitContribution: 'ವಿಭಜಿತ ಕೊಡುಗೆ ವಿಶ್ಲೇಷಣೆ',
+      paidBefore: 'ಮೊದಲು ಕಟ್ಟಿದ್ದು',
+      paidAfter: 'ನಂತರ ಕಟ್ಟಿದ್ದು',
+      effectiveLoan: 'ಉಳಿದ ಕಂತುಗಳ ಒಟ್ಟು ಹಣ',
+      effectiveInterest: 'ಸದಸ್ಯರ ಲಾಭ (IRR)',
+      effectiveInterestRate: 'ವಾರ್ಷಿಕ IRR',
+      monthlyIRR: 'ಮಾಸಿಕ IRR',
+      cashFlowTimeline: 'ಹಣದ ಹರಿವು',
+      cumulativePosition: 'ಒಟ್ಟು ಸ್ಥಾನ',
+      simpleSummary: 'ಸರಳ ಸಾರಾಂಶ',
+      youPay: 'ನೀವು ಕಟ್ಟುವುದು',
+      youGet: 'ನೀವು ಪಡೆಯುವುದು',
+      netPosition: 'ನಿವ್ವಳ ಸ್ಥಾನ',
+      monthsToRepay: 'ಉಳಿದ ಒಟ್ಟು ಕಂತುಗಳು'
     }
   };
 
@@ -254,7 +365,70 @@ const ChitFundApp = () => {
       
       if (remainingMembers === 0) break;
     }
-    
+
+    // Calculate member returns with IRR analysis
+    interface MemberReturn {
+      member: number;
+      withdrawalMonth: number;
+      totalContribution: number;
+      withdrawal: number;
+      netReturn: number;
+      returnPercent: number;
+      monthlyIRR: number | null;
+      annualizedIRR: number | null;
+    }
+
+    const memberReturns: MemberReturn[] = [];
+    let memberNumber = 1;
+
+    // Calculate total contribution across ALL months (every member pays for entire duration)
+    const totalContributionForAllMembers = withdrawalSchedule.reduce(
+      (sum, schedule) => sum + schedule.contributionPerMember,
+      0
+    );
+
+    for (const schedule of withdrawalSchedule) {
+      // Each member who withdraws in this month
+      for (let i = 0; i < schedule.actualWithdrawals; i++) {
+        const netReturn = schedule.withdrawalAmount - totalContributionForAllMembers;
+        const returnPercent = (netReturn / totalContributionForAllMembers) * 100;
+
+        // Build cash flows array for IRR calculation
+        // Negative = outflow (paying contribution), Positive = inflow (receiving withdrawal)
+        const cashFlows: number[] = [];
+
+        for (let month = 0; month < withdrawalSchedule.length; month++) {
+          const contribution = -withdrawalSchedule[month].contributionPerMember;
+
+          if (month + 1 === schedule.month) {
+            // In withdrawal month: receive withdrawal minus pay contribution
+            cashFlows.push(schedule.withdrawalAmount + contribution);
+          } else {
+            // Other months: just pay contribution
+            cashFlows.push(contribution);
+          }
+        }
+
+        // Calculate IRR
+        const monthlyIRR = calculateIRR(cashFlows);
+        const annualizedIRR = monthlyIRR !== null
+          ? (Math.pow(1 + monthlyIRR, 12) - 1) * 100  // Compound annual rate
+          : null;
+
+        memberReturns.push({
+          member: memberNumber,
+          withdrawalMonth: schedule.month,
+          totalContribution: Math.round(totalContributionForAllMembers),
+          withdrawal: schedule.withdrawalAmount,
+          netReturn: Math.round(netReturn),
+          returnPercent: returnPercent,
+          monthlyIRR: monthlyIRR !== null ? monthlyIRR * 100 : null,
+          annualizedIRR: annualizedIRR
+        });
+        memberNumber++;
+      }
+    }
+
     return {
       duration: withdrawalSchedule.length,
       totalPool,
@@ -266,7 +440,8 @@ const ChitFundApp = () => {
       finalCarryOver: withdrawalSchedule[withdrawalSchedule.length - 1].remainingPool,
       loanDetails,
       totalLoanAmount: Math.round(totalLoanAmount),
-      totalInterestEarned: Math.round(totalInterestEarned)
+      totalInterestEarned: Math.round(totalInterestEarned),
+      memberReturns
     };
   };
 
@@ -433,43 +608,46 @@ const ChitFundApp = () => {
           <p className="text-sm text-gray-600 mt-2">{t.adjustUtilization}</p>
         </div>
 
-        {/* Charts */}
-        <div className="space-y-4 sm:space-y-6">
-          <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-            <h3 className="text-base sm:text-lg font-bold text-gray-800 mb-4">{t.withdrawalTrends}</h3>
-            <div className="h-[250px] sm:h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={results.withdrawalSchedule}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="month" tick={{ fontSize: 12 }} />
-                  <YAxis tick={{ fontSize: 12 }} />
-                  <Tooltip />
-                  <Legend wrapperStyle={{ fontSize: '12px' }} />
-                  <Area type="monotone" dataKey="withdrawalAmount" stroke="#3b82f6" fill="#93c5fd" name={t.withdrawal} />
-                  <Area type="monotone" dataKey="availablePool" stroke="#10b981" fill="#86efac" name={t.pool} />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
+        {/* Member Returns (IRR) */}
+        <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 mb-6">
+          <h3 className="text-base sm:text-lg font-bold text-gray-800 mb-4">{t.effectiveInterest}</h3>
+          <div className="overflow-x-auto -mx-4 sm:mx-0">
+            <table className="w-full min-w-[700px]">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase">{t.member}</th>
+                  <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase">{t.withdrawalMonth}</th>
+                  <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase">{t.totalContribution}</th>
+                  <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase">{t.withdrawal}</th>
+                  <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase">{t.netReturn}</th>
+                  <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase">{t.monthlyIRR}</th>
+                  <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase">{t.effectiveInterestRate}</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {results.memberReturns.map((member) => (
+                  <tr key={member.member} className="hover:bg-gray-50">
+                    <td className="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium text-gray-900">{member.member}</td>
+                    <td className="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-gray-700">{t.month} {member.withdrawalMonth}</td>
+                    <td className="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-gray-700">₹{member.totalContribution.toLocaleString()}</td>
+                    <td className="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium text-blue-600">₹{member.withdrawal.toLocaleString()}</td>
+                    <td className={`px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium ${member.netReturn >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                      {member.netReturn >= 0 ? '+' : ''}₹{member.netReturn.toLocaleString()}
+                    </td>
+                    <td className={`px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium ${member.monthlyIRR !== null && member.monthlyIRR >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                      {member.monthlyIRR !== null ? `${member.monthlyIRR >= 0 ? '+' : ''}${member.monthlyIRR.toFixed(2)}%` : '-'}
+                    </td>
+                    <td className={`px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-bold ${member.annualizedIRR !== null && member.annualizedIRR >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                      {member.annualizedIRR !== null ? `${member.annualizedIRR >= 0 ? '+' : ''}${member.annualizedIRR.toFixed(1)}%` : '-'}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-
-          {results.loanDetails.length > 0 && (
-            <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-              <h3 className="text-base sm:text-lg font-bold text-gray-800 mb-4">{t.loanDistribution}</h3>
-              <div className="h-[250px] sm:h-[300px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={results.loanDetails}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="month" tick={{ fontSize: 12 }} />
-                    <YAxis tick={{ fontSize: 12 }} />
-                    <Tooltip />
-                    <Legend wrapperStyle={{ fontSize: '12px' }} />
-                    <Bar dataKey="loanAmount" fill="#06b6d4" name={t.loanAmount} />
-                    <Bar dataKey="interestEarned" fill="#84cc16" name={t.interest} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-          )}
+          <p className="text-xs text-gray-500 mt-3">
+            * {language === 'en' ? 'IRR (Internal Rate of Return) accounts for the timing of all cash flows. Compare with FD rates (~7%) or mutual fund returns (~12-15%) to evaluate.' : 'IRR (Internal Rate of Return) ಎಲ್ಲಾ ತಿಂಗಳುಗಳ ಹಣದ ಹರಿವನ್ನು ಗಣನೆಗೆ ತೆಗೆದುಕೊಂಡು ಮಾಡಿದ ಬಡ್ಡಿ ದರ. ಇದನ್ನು FD (~7%) ಅಥವಾ MF (~12-15%) ಜೊತೆ ಹೋಲಿಸಿ ನೋಡಿ.'}
+          </p>
         </div>
 
         {/* Tables */}
