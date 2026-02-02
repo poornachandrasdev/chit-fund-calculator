@@ -451,7 +451,7 @@ const ChitFundApp = () => {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5 relative">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5 pb-8 sm:pb-10 relative">
           {/* Logo and Title */}
           <div className="flex items-center gap-3">
             <div className="bg-white/10 p-2 rounded-xl">
@@ -463,7 +463,7 @@ const ChitFundApp = () => {
           {/* Language Toggle - Bottom Right */}
           <button
             onClick={() => setLanguage(language === 'en' ? 'kn' : 'en')}
-            className="absolute bottom-3 right-4 sm:bottom-4 sm:right-6 flex items-center gap-1.5 bg-white/15 hover:bg-white/25 px-3 py-1.5 rounded-full transition-all border border-white/20"
+            className="absolute bottom-2 right-4 sm:right-6 flex items-center gap-1.5 bg-white hover:bg-gray-100 text-blue-600 px-3 py-1.5 rounded-full transition-all shadow-md"
           >
             <Globe className="w-3.5 h-3.5" />
             <span
@@ -473,8 +473,7 @@ const ChitFundApp = () => {
                 lineHeight: '14px',
                 display: 'flex',
                 alignItems: 'center',
-                height: '14px',
-                paddingTop: '4px',
+                height: '14px'
               }}
             >
               {language === 'en' ? 'ಕನ್ನಡ' : 'English'}
