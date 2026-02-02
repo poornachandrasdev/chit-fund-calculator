@@ -450,21 +450,38 @@ const ChitFundApp = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-6 shadow-lg">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
+      <header className="bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5 relative">
+          {/* Logo and Title */}
           <div className="flex items-center gap-3">
-            <img src={logo} alt="ChitFund Calculator" className="w-10 h-10 sm:w-12 sm:h-12" />
-            <h1 className="text-2xl sm:text-3xl font-bold">{t.title}</h1>
+            <div className="bg-white/10 p-2 rounded-xl">
+              <img src={logo} alt="ChitFund Calculator" className="w-9 h-9 sm:w-10 sm:h-10" />
+            </div>
+            <h1 className="text-2xl sm:text-2xl lg:text-3xl font-bold tracking-tight">{t.title}</h1>
           </div>
+
+          {/* Language Toggle - Bottom Right */}
           <button
             onClick={() => setLanguage(language === 'en' ? 'kn' : 'en')}
-            className="flex items-center gap-2 bg-white/20 hover:bg-white/30 px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg transition-all text-white"
+            className="absolute bottom-3 right-4 sm:bottom-4 sm:right-6 flex items-center gap-1.5 bg-white/15 hover:bg-white/25 px-3 py-1.5 rounded-full transition-all border border-white/20"
           >
-            <Globe className="w-4 h-4 sm:w-5 sm:h-5" />
-            <span className="font-medium text-sm sm:text-base" style={{ fontFamily: "'Noto Sans Kannada', sans-serif" }}>{language === 'en' ? 'ಕನ್ನಡ' : 'English'}</span>
+            <Globe className="w-3.5 h-3.5" />
+            <span
+              className="font-medium text-xs"
+              style={{
+                fontFamily: "'Noto Sans Kannada', sans-serif",
+                lineHeight: '14px',
+                display: 'flex',
+                alignItems: 'center',
+                height: '14px',
+                paddingTop: '4px',
+              }}
+            >
+              {language === 'en' ? 'ಕನ್ನಡ' : 'English'}
+            </span>
           </button>
         </div>
-      </div>
+      </header>
 
       <div className="max-w-7xl mx-auto p-4 sm:p-6">
         
@@ -569,14 +586,13 @@ const ChitFundApp = () => {
         </div>
 
         {/* Key Metrics */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 mb-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 mb-6">
           {[
             { label: t.monthlyPool, value: `₹${formatIndianCurrency(results.totalPool)}`, icon: DollarSign, color: 'blue' },
             { label: t.commissionPerMonth, value: `₹${formatIndianCurrency(results.commissionPerMonth)}`, icon: TrendingUp, color: 'green' },
             { label: t.duration, value: `${results.duration}`, icon: Users, color: 'purple' },
             { label: t.totalLoans, value: `₹${formatIndianCurrency(results.totalLoanAmount)}`, icon: DollarSign, color: 'cyan' },
-            { label: t.totalInterest, value: `₹${formatIndianCurrency(results.totalInterestEarned)}`, icon: TrendingUp, color: 'lime' },
-            { label: t.finalBalance, value: `₹${formatIndianCurrency(results.finalCarryOver)}`, icon: DollarSign, color: 'orange' }
+            { label: t.totalInterest, value: `₹${formatIndianCurrency(results.totalInterestEarned)}`, icon: TrendingUp, color: 'lime' }
           ].map((metric, idx) => (
             <div key={idx} className="bg-white rounded-lg shadow-md p-3 sm:p-4">
               <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-${metric.color}-400 to-${metric.color}-600 flex items-center justify-center mb-2 sm:mb-3`}>
