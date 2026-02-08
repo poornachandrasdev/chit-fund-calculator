@@ -468,35 +468,37 @@ const ChitFundApp = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5 pb-8 sm:pb-10 relative">
+      <header className="bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg" style={{ paddingTop: 'var(--safe-area-inset-top)' }}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5 relative">
           {/* Logo and Title */}
-          <div className="flex items-center gap-3">
-            <div className="bg-white/10 p-2 rounded-xl">
-              <img src={logo} alt="ChitFund Calculator" className="w-9 h-9 sm:w-10 sm:h-10" />
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="bg-white/10 p-2 rounded-xl">
+                <img src={logo} alt="ChitFund Calculator" className="w-9 h-9 sm:w-10 sm:h-10" />
+              </div>
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight">{t.title}</h1>
             </div>
-            <h1 className="text-2xl sm:text-2xl lg:text-3xl font-bold tracking-tight">{t.title}</h1>
-          </div>
-
-          {/* Language Toggle - Bottom Right */}
-          <button
-            onClick={() => setLanguage(language === 'en' ? 'kn' : 'en')}
-            className="absolute bottom-2 right-4 sm:right-6 flex items-center gap-1.5 bg-white hover:bg-gray-100 text-blue-600 px-3 py-1.5 rounded-full transition-all shadow-md"
-          >
-            <Globe className="w-3.5 h-3.5" />
-            <span
-              className="font-medium text-xs"
-              style={{
-                fontFamily: "'Noto Sans Kannada', sans-serif",
-                lineHeight: '14px',
-                display: 'flex',
-                alignItems: 'center',
-                height: '14px'
-              }}
+            
+            {/* Language Toggle - Top Right */}
+            <button
+              onClick={() => setLanguage(language === 'en' ? 'kn' : 'en')}
+              className="flex items-center gap-1.5 bg-white hover:bg-gray-100 text-blue-600 px-3 py-1.5 rounded-full transition-all shadow-md"
             >
-              {language === 'en' ? 'ಕನ್ನಡ' : 'English'}
-            </span>
-          </button>
+              <Globe className="w-3.5 h-3.5" />
+              <span
+                className="font-medium text-xs"
+                style={{
+                  fontFamily: "'Noto Sans Kannada', sans-serif",
+                  lineHeight: '14px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  height: '14px'
+                }}
+              >
+                {language === 'en' ? 'ಕನ್ನಡ' : 'English'}
+              </span>
+            </button>
+          </div>
         </div>
       </header>
 

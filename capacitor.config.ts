@@ -11,6 +11,10 @@ const config: CapacitorConfig = {
     androidScheme: 'https'
   },
   plugins: {
+    SystemBars: {
+      insetsHandling: 'css',
+      style: 'DARK',
+    },
     SplashScreen: {
       launchShowDuration: 2000,
       backgroundColor: '#2563EB',
