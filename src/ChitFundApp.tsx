@@ -265,6 +265,24 @@ const ChitFundApp = () => {
   const calculateChitDetails = () => {
     const { totalMembers, monthlyContribution, firstWithdrawal, monthlyIncrement, commissionType, commissionRate, oneTimeCommission, loanInterestRate } = calcInputs;
     
+    // Add validation for edge cases
+    if (totalMembers <= 0) {
+      return {
+        duration: 0,
+        totalPool: 0,
+        commissionPerMonth: 0,
+        totalCommission: 0,
+        netPoolPerMonth: 0,
+        withdrawalSchedule: [],
+        totalMembersServed: 0,
+        finalCarryOver: 0,
+        loanDetails: [],
+        totalLoanAmount: 0,
+        totalInterestEarned: 0,
+        memberReturns: []
+      };
+    }
+    
     const duration = totalMembers;
     const totalPool = totalMembers * monthlyContribution;
     
