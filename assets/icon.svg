@@ -1,19 +1,40 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
   <defs>
     <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#60A5FA"/>
-      <stop offset="50%" stop-color="#3B82F6"/>
-      <stop offset="100%" stop-color="#1D4ED8"/>
+      <stop offset="0%" stop-color="#1E3A8A"/>
+      <stop offset="50%" stop-color="#1D4ED8"/>
+      <stop offset="100%" stop-color="#2563EB"/>
+    </linearGradient>
+    <linearGradient id="noteGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FBBF24"/>
+      <stop offset="50%" stop-color="#F59E0B"/>
+      <stop offset="100%" stop-color="#D97706"/>
     </linearGradient>
   </defs>
+
+  <!-- Background -->
   <rect width="1024" height="1024" rx="200" fill="url(#bgGradient)"/>
-  <circle cx="512" cy="512" r="280" fill="none" stroke="#FFFFFF" stroke-width="8" opacity="0.3"/>
-  <g fill="#FFFFFF" transform="translate(512, 512) scale(7) translate(-32, -32)">
-    <rect x="17" y="16" width="30" height="5" rx="2"/>
-    <rect x="17" y="25" width="30" height="5" rx="2"/>
-    <path d="M22 25 L22 32 L38 52 L46 52 L30 32 L30 25 Z"/>
+
+  <!-- Stack of ₹200 banknotes -->
+  <rect x="250" y="280" width="440" height="280" rx="28" ry="28" fill="#B45309" opacity="0.55" transform="rotate(-8, 470, 420)"/>
+  <rect x="262" y="292" width="440" height="280" rx="28" ry="28" fill="#D97706" opacity="0.7" transform="rotate(-3, 482, 432)"/>
+  <rect x="274" y="304" width="440" height="280" rx="28" ry="28" fill="url(#noteGradient)" stroke="#92400E" stroke-width="6"/>
+
+  <!-- Rupee symbol -->
+  <g fill="#78350F">
+    <rect x="340" y="370" width="175" height="32" rx="10"/>
+    <rect x="340" y="432" width="175" height="32" rx="10"/>
+    <path d="M380 432 L380 492 L500 632 L540 632 L420 492 L420 432 Z"/>
   </g>
-  <circle cx="302" cy="512" r="20" fill="#BFDBFE" opacity="0.8"/>
-  <circle cx="722" cy="512" r="20" fill="#BFDBFE" opacity="0.8"/>
-  <circle cx="512" cy="302" r="20" fill="#BFDBFE" opacity="0.8"/>
+
+  <!-- "200" denomination -->
+  <text x="610" y="540" font-family="Arial, sans-serif" font-size="80" font-weight="bold" fill="#78350F" opacity="0.85" text-anchor="middle">200</text>
+
+  <!-- Community dots - warm light gold -->
+  <circle cx="270" cy="512" r="22" fill="#FDE68A" opacity="0.75"/>
+  <circle cx="754" cy="512" r="22" fill="#FDE68A" opacity="0.75"/>
+  <circle cx="512" cy="250" r="22" fill="#FDE68A" opacity="0.75"/>
+  <circle cx="512" cy="774" r="22" fill="#FDE68A" opacity="0.75"/>
+  <circle cx="310" cy="310" r="16" fill="#FDE68A" opacity="0.5"/>
+  <circle cx="714" cy="714" r="16" fill="#FDE68A" opacity="0.5"/>
 </svg>
