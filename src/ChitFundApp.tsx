@@ -553,7 +553,8 @@ const ChitFundApp = () => {
                   lineHeight: '14px',
                   display: 'flex',
                   alignItems: 'center',
-                  height: '14px'
+                  height: '14px',
+                  paddingTop: '3px'
                 }}
               >
                 {language === 'en' ? 'ಕನ್ನಡ' : 'English'}
