@@ -534,9 +534,7 @@ const ChitFundApp = () => {
           {/* Logo and Title */}
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-3">
-              <div className="bg-white/10 p-2 rounded-xl">
-                <img src={logo} alt="ChitFund Calculator" className="w-9 h-9 sm:w-10 sm:h-10" />
-              </div>
+              <img src={logo} alt="ChitFund Calculator" className="w-9 h-9 sm:w-10 sm:h-10" />
               <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight">{t.title}</h1>
             </div>
 
