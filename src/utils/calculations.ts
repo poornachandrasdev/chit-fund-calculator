@@ -262,15 +262,17 @@ export const calculateChitDetails = (inputs: CalculationInputs): ChitCalculation
   );
 
   for (const schedule of withdrawalSchedule) {
-    const cashFlows: number[] = [];
+    // Updated Cash Flow Logic:
+    // Payments at start of each month (t=0 to N-1)
+    // Withdrawal at the end of the winning month (t=M)
+    const cashFlows: number[] = new Array(withdrawalSchedule.length + 1).fill(0);
+    
     for (let month = 0; month < withdrawalSchedule.length; month++) {
-      const contribution = -withdrawalSchedule[month].contributionPerMember;
-      if (month + 1 === schedule.month) {
-        cashFlows.push(schedule.withdrawalAmount + contribution);
-      } else {
-        cashFlows.push(contribution);
-      }
+      cashFlows[month] -= withdrawalSchedule[month].contributionPerMember;
     }
+    
+    // Withdrawal happens at the end of the withdrawal month
+    cashFlows[schedule.month] += schedule.withdrawalAmount;
 
     const monthlyIRR = calculateIRR(cashFlows);
     const annualizedIRR = monthlyIRR !== null

@@ -90,11 +90,7 @@ const ChitFundResults: React.FC<ChitFundResultsProps> = ({ results, loanUtilizat
           </table>
         </div>
         <p className="text-xs text-gray-500 mt-3">
-          * {t.effectiveInterestRate === 'Annualized IRR' ? (
-            t.language === 'en' 
-              ? 'IRR (Internal Rate of Return) accounts for the timing of all cash flows. Compare with FD rates (~7%) or mutual fund returns (~12-15%) to evaluate.' 
-              : 'IRR (Internal Rate of Return) ಎಲ್ಲಾ ತಿಂಗಳುಗಳ ಹಣದ ಹರಿವನ್ನು ಗಣನೆಗೆ ತೆಗೆದುಕೊಂಡು ಮಾಡಿದ ಬಡ್ಡಿ ದರ. ಇದನ್ನು FD (~7%) ಅಥವಾ MF (~12-15%) ಜೊತೆ ಹೋಲಿಸಿ ನೋಡಿ.'
-          ) : ''}
+          * {t.irrExplanation}
         </p>
       </div>
 
